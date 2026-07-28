@@ -306,8 +306,8 @@
     </a>
     <a href="project3/" class="file-card">
       <div class="row"><span class="ext-badge ext-js">.js</span></div>
-      <h3>Interactive Component Set</h3>
-      <p>Reusable modals, tabs, and accordions built in vanilla JavaScript.</p>
+      <h3>Formwork — Business UI Kit</h3>
+      <p>A booking modal, pricing tabs, and FAQ accordion — built for sites that need to convert visitors.</p>
       <div class="open">open file →</div>
     </a>
   </div>
@@ -373,8 +373,6 @@
       if (charIdx === 0) el.innerHTML += `<span class="${seg.cls}">`;
       charIdx++;
       const partial = seg.text.slice(0, charIdx);
-      const spans = el.querySelectorAll('span.' + (seg.cls || 'PLACEHOLDER'));
-      // rebuild efficiently by re-rendering full string each tick
       let built = '';
       for (let i = 0; i < segIdx; i++) built += `<span class="${segments[i].cls}">${segments[i].text}</span>`;
       built += `<span class="${seg.cls}">${partial}</span>`;
