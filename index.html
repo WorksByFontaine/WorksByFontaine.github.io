@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorksByFontaine — Developer Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0B0E14;
+    --panel: #12161F;
+    --panel-hover: #161B26;
+    --border: #232938;
+    --text: #E6E9EF;
+    --muted: #7E879C;
+    --amber: #E8B339;
+    --green: #6FCF7A;
+    --coral: #F2777A;
+    --gutter-w: 56px;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ink);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* line-number gutter running the full page */
+  .gutter {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: var(--gutter-w);
+    background: #0A0C11;
+    border-right: 1px solid var(--border);
+    z-index: 5;
+    display: none;
+  }
+  .gutter-track {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #2E3548;
+    text-align: right;
+    padding-right: 12px;
+    line-height: 28px;
+    user-select: none;
+  }
+
+  @media (min-width: 900px) {
+    .gutter { display: block; }
+    body { padding-left: var(--gutter-w); }
+  }
+
+  /* top bar: file path breadcrumb */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(11,14,20,0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .topbar .path { color: var(--muted); }
+  .topbar .path span { color: var(--amber); }
+  .topbar nav { display: flex; gap: 20px; }
+  .topbar nav a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .topbar nav a:hover { color: var(--text); }
+
+  section { padding: 100px 24px; max-width: 880px; margin: 0 auto; }
+
+  .comment { color: var(--muted); font-family: var(--mono); font-size: 13px; letter-spacing: 0.02em; }
+  .comment::before { content: "// "; color: #3A4256; }
+
+  /* HERO */
+  .hero { padding-top: 140px; padding-bottom: 120px; }
+  .hero-code {
+    font-family: var(--mono);
+    font-size: clamp(20px, 3.4vw, 34px);
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+  .kw { color: var(--coral); }
+  .fn { color: var(--amber); }
+  .str { color: var(--green); }
+  .cursor {
+    display: inline-block;
+    width: 10px;
+    height: 1em;
+    background: var(--amber);
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .hero-sub {
+    margin-top: 28px;
+    color: var(--muted);
+    font-size: 17px;
+    max-width: 480px;
+  }
+  .hero-cta { margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn {
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 10px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .btn:hover { border-color: var(--amber); transform: translateY(-2px); }
+  .btn.primary { background: var(--amber); color: #1a1305; border-color: var(--amber); font-weight: 600; }
+  .btn.primary:hover { border-color: var(--amber); }
+
+  /* ABOUT — object literal */
+  .about-obj {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 32px;
+    font-family: var(--mono);
+    font-size: 15px;
+    overflow-x: auto;
+  }
+  .about-obj .line { padding: 3px 0; }
+  .about-obj .key { color: var(--amber); }
+  .about-obj .val { color: var(--green); }
+  .about-obj .punct { color: #4B5468; }
+  .indent { padding-left: 24px; }
+
+  /* PROJECTS */
+  h2.section-title {
+    font-family: var(--mono);
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  h2.section-title .num { color: var(--muted); font-weight: 400; }
+  .section-lead { color: var(--muted); margin-bottom: 40px; max-width: 480px; }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+  }
+  .file-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.25s, transform 0.25s, background 0.25s;
+    display: block;
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  .file-card.in-view { opacity: 1; transform: translateY(0); }
+  .file-card:hover {
+    border-color: var(--amber);
+    background: var(--panel-hover);
+    transform: translateY(-4px);
+  }
+  .file-card .row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .ext-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .ext-html { background: rgba(232,179,57,0.15); color: var(--amber); }
+  .ext-css  { background: rgba(111,207,122,0.15); color: var(--green); }
+  .ext-js   { background: rgba(242,119,122,0.15); color: var(--coral); }
+  .file-card h3 { font-family: var(--mono); font-size: 16px; margin-bottom: 8px; }
+  .file-card p { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+  .file-card .open { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .file-card:hover .open { color: var(--amber); }
+
+  /* SKILLS — array */
+  .skills-array {
+    font-family: var(--mono);
+    font-size: 15px;
+    line-height: 2.2;
+    color: var(--muted);
+    word-spacing: 4px;
+  }
+  .skills-array .tag {
+    color: var(--text);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 5px;
+    margin: 0 4px;
+    display: inline-block;
+  }
+
+  /* CONTACT — terminal */
+  .terminal {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .terminal-bar {
+    display: flex;
+    gap: 7px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.r { background: #F2777A; } .dot.y { background: #E8B339; } .dot.g { background: #6FCF7A; }
+  .terminal-body { padding: 24px; font-family: var(--mono); font-size: 14px; }
+  .terminal-body .prompt { color: var(--green); }
+  .terminal-body .out { color: var(--muted); margin: 6px 0 18px; }
+  .terminal-body a { color: var(--amber); text-decoration: none; }
+  .terminal-body a:hover { text-decoration: underline; }
+
+  footer {
+    text-align: center;
+    padding: 40px 24px 60px;
+    color: #3A4256;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    .file-card { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="gutter"><div class="gutter-track" id="gutterTrack"></div></div>
+
+<div class="topbar">
+  <div class="path">~/worksbyfontaine/<span>index.html</span></div>
+  <nav>
+    <a href="#projects">projects</a>
+    <a href="#about">about</a>
+    <a href="#contact">contact</a>
+  </nav>
+</div>
+
+<section class="hero">
+  <div class="comment">portfolio.js</div>
+  <div class="hero-code" id="typewriter"></div>
+  <p class="hero-sub">I build clean, functional front-end templates and ship them straight from GitHub — no bloat, no frameworks I don't need.</p>
+  <div class="hero-cta">
+    <a href="#projects" class="btn primary">View projects</a>
+    <a href="#contact" class="btn">Get in touch</a>
+  </div>
+</section>
+
+<section id="about">
+  <div class="comment">about</div>
+  <h2 class="section-title"><span class="num">01 /</span> Who's building this</h2>
+  <div class="about-obj">
+    <div class="line"><span class="key">const</span> developer <span class="punct">=</span> <span class="punct">{</span></div>
+    <div class="line indent"><span class="key">name:</span> <span class="val">"Fontaine"</span><span class="punct">,</span></div>
+    <div class="line indent"><span class="key">focus:</span> <span class="val">"front-end templates & UI"</span><span class="punct">,</span></div>
+    <div class="line indent"><span class="key">stack:</span> <span class="punct">[</span><span class="val">"HTML"</span><span class="punct">,</span> <span class="val">"CSS"</span><span class="punct">,</span> <span class="val">"JavaScript"</span><span class="punct">]</span><span class="punct">,</span></div>
+    <div class="line indent"><span class="key">status:</span> <span class="val">"open to work"</span></div>
+    <div class="line"><span class="punct">};</span></div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="comment">projects</div>
+  <h2 class="section-title"><span class="num">02 /</span> Things I've shipped</h2>
+  <p class="section-lead">Each one lives in its own folder in this repo — click through to see it live.</p>
+  <div class="project-grid">
+    <a href="project1/" class="file-card">
+      <div class="row"><span class="ext-badge ext-html">.html</span></div>
+      <h3>Landing Page Template</h3>
+      <p>A responsive one-page site template with hero, features, and CTA sections.</p>
+      <div class="open">open file →</div>
+    </a>
+    <a href="project2/" class="file-card">
+      <div class="row"><span class="ext-badge ext-css">.css</span></div>
+      <h3>Dashboard UI Kit</h3>
+      <p>A card-based admin dashboard layout with sidebar nav and stat widgets.</p>
+      <div class="open">open file →</div>
+    </a>
+    <a href="project3/" class="file-card">
+      <div class="row"><span class="ext-badge ext-js">.js</span></div>
+      <h3>Interactive Component Set</h3>
+      <p>Reusable modals, tabs, and accordions built in vanilla JavaScript.</p>
+      <div class="open">open file →</div>
+    </a>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="comment">skills</div>
+  <h2 class="section-title"><span class="num">03 /</span> Toolbox</h2>
+  <div class="skills-array">
+    <span class="tag">HTML5</span><span class="tag">CSS3</span><span class="tag">JavaScript</span><span class="tag">Git</span><span class="tag">Responsive Design</span><span class="tag">GitHub Pages</span>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="comment">contact</div>
+  <h2 class="section-title"><span class="num">04 /</span> Say hello</h2>
+  <div class="terminal">
+    <div class="terminal-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+    <div class="terminal-body">
+      <div><span class="prompt">$</span> contact --email</div>
+      <div class="out">→ <a href="mailto:your-email@example.com">your-email@example.com</a></div>
+      <div><span class="prompt">$</span> contact --github</div>
+      <div class="out">→ <a href="https://github.com/WorksByFontaine">github.com/WorksByFontaine</a></div>
+    </div>
+  </div>
+</section>
+
+<footer>&copy; 2026 WorksByFontaine — built with vanilla HTML/CSS/JS, hosted on GitHub Pages</footer>
+
+<script>
+  // gutter line numbers
+  const track = document.getElementById('gutterTrack');
+  function fillGutter() {
+    const lines = Math.ceil(document.body.scrollHeight / 28) + 5;
+    let html = '';
+    for (let i = 1; i <= lines; i++) html += i + '<br>';
+    track.innerHTML = html;
+  }
+  fillGutter();
+  window.addEventListener('resize', fillGutter);
+
+  // hero typewriter
+  const el = document.getElementById('typewriter');
+  const segments = [
+    { text: 'function ', cls: 'kw' },
+    { text: 'introduce', cls: 'fn' },
+    { text: '() {\n  return ', cls: '' },
+    { text: '"Hi, I\'m Fontaine — I code things."', cls: 'str' },
+    { text: '\n}', cls: '' }
+  ];
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (reduceMotion) {
+    el.innerHTML = segments.map(s => `<span class="${s.cls}">${s.text}</span>`).join('');
+  } else {
+    let segIdx = 0, charIdx = 0;
+    function type() {
+      if (segIdx >= segments.length) {
+        el.innerHTML += '<span class="cursor"></span>';
+        return;
+      }
+      const seg = segments[segIdx];
+      if (charIdx === 0) el.innerHTML += `<span class="${seg.cls}">`;
+      charIdx++;
+      const partial = seg.text.slice(0, charIdx);
+      const spans = el.querySelectorAll('span.' + (seg.cls || 'PLACEHOLDER'));
+      // rebuild efficiently by re-rendering full string each tick
+      let built = '';
+      for (let i = 0; i < segIdx; i++) built += `<span class="${segments[i].cls}">${segments[i].text}</span>`;
+      built += `<span class="${seg.cls}">${partial}</span>`;
+      el.innerHTML = built;
+      if (charIdx < seg.text.length) {
+        setTimeout(type, 18);
+      } else {
+        segIdx++; charIdx = 0;
+        setTimeout(type, 40);
+      }
+    }
+    type();
+  }
+
+  // scroll reveal for project cards
+  const cards = document.querySelectorAll('.file-card');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  cards.forEach(c => io.observe(c));
+</script>
+
+</body>
+</html>
