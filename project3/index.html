@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formwork — UI Components for Business Sites</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF9;
+    --panel: #FFFFFF;
+    --panel-2: #F3F4F6;
+    --border: #E6E7EA;
+    --ink: #12181F;
+    --muted: #667085;
+    --blue: #2954E0;
+    --blue-soft: #EBEFFD;
+    --amber: #F5A524;
+    --display: 'Manrope', sans-serif;
+    --body: 'Inter', sans-serif;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+
+  .back-link {
+    display: block;
+    background: var(--blue);
+    color: #fff;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px;
+    text-decoration: none;
+  }
+  .back-link:hover { background: #1F42B8; }
+
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+  header { padding: 64px 0 48px; border-bottom: 1px solid var(--border); margin-bottom: 48px; }
+  .kicker { font-family: var(--display); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); font-weight: 700; margin-bottom: 14px; }
+  h1 { font-family: var(--display); font-size: clamp(30px, 4.5vw, 42px); font-weight: 800; margin-bottom: 14px; letter-spacing: -0.01em; }
+  header p { color: var(--muted); max-width: 540px; font-size: 15.5px; }
+
+  .catalog { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; padding-bottom: 100px; }
+  @media (max-width: 800px) { .catalog { grid-template-columns: 1fr; } }
+
+  .specimen {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 26px;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(18,24,31,0.04);
+  }
+  .specimen-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: var(--blue-soft);
+    padding: 5px 10px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+  }
+  .specimen h2 { font-family: var(--display); font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .specimen .desc { color: var(--muted); font-size: 13.5px; margin-bottom: 22px; }
+  .demo-area {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    min-height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn {
+    font-family: var(--body);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 11px 22px;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    background: var(--blue);
+    color: #fff;
+    transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(41,84,224,0.28); background: #1F42B8; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--border); }
+  .btn.ghost:hover { border-color: var(--blue); box-shadow: none; transform: none; background: transparent; color: var(--blue); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(18,24,31,0.5);
+    backdrop-filter: blur(3px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.3s var(--ease);
+    z-index: 100;
+  }
+  .modal-overlay.open { opacity: 1; visibility: visible; }
+  .modal-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 30px;
+    width: 360px;
+    transform: translateY(16px) scale(0.97);
+    opacity: 0;
+    transition: transform 0.35s var(--ease), opacity 0.35s var(--ease);
+  }
+  .modal-overlay.open .modal-box { transform: translateY(0) scale(1); opacity: 1; }
+  .modal-box .modal-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--blue-soft); color: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; margin-bottom: 16px;
+  }
+  .modal-box h3 { font-family: var(--display); font-size: 18px; margin-bottom: 8px; }
+  .modal-box p { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+  .modal-box input {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 8px;
+    font-family: var(--body); font-size: 14px;
+    margin-bottom: 16px;
+    background: var(--panel-2);
+    color: var(--ink);
+  }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+  /* TABS */
+  .tabset { width: 100%; }
+  .tab-bar { display: flex; gap: 4px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 4px; margin-bottom: 16px; }
+  .tab-btn {
+    flex: 1;
+    background: none; border: none;
+    color: var(--muted);
+    font-family: var(--body); font-weight: 600; font-size: 13px;
+    padding: 9px 0;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: color 0.25s var(--ease), background 0.25s var(--ease);
+  }
+  .tab-btn.active { color: #fff; background: var(--blue); }
+  .tab-panel { display: none; animation: fadeUp 0.3s var(--ease); }
+  .tab-panel.active { display: block; }
+  .price-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px; }
+  .price-row .amount { font-family: var(--display); font-size: 26px; font-weight: 800; }
+  .price-row .period { color: var(--muted); font-size: 13px; }
+  .tab-panel p { color: var(--muted); font-size: 13px; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ACCORDION */
+  .accordion { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+  .acc-item { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--panel); }
+  .acc-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 16px;
+    cursor: pointer;
+    font-size: 13.5px; font-weight: 600;
+  }
+  .acc-head .plus { color: var(--blue); transition: transform 0.3s var(--ease); font-size: 16px; }
+  .acc-item.open .acc-head .plus { transform: rotate(45deg); }
+  .acc-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s var(--ease);
+  }
+  .acc-body p { padding: 0 16px 14px; color: var(--muted); font-size: 13px; }
+
+  /* TOGGLE */
+  .pref-row { display: flex; flex-direction: column; gap: 14px; width: 100%; }
+  .pref-item { display: flex; align-items: center; justify-content: space-between; }
+  .pref-item .label { font-size: 13.5px; font-weight: 500; }
+  .pref-item .hint { font-size: 12px; color: var(--muted); }
+  .switch {
+    width: 44px; height: 25px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    position: relative;
+    transition: background 0.3s var(--ease);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .switch .knob {
+    position: absolute; top: 2px; left: 2px;
+    width: 19px; height: 19px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.3s var(--ease);
+  }
+
+  footer { text-align: center; padding: 30px 0 60px; color: #A3A9B4; font-family: var(--display); font-size: 12px; }
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back-link">← Back to WorksByFontaine portfolio</a>
+
+<div class="wrap">
+  <header>
+    <div class="kicker">UI Component Toolkit</div>
+    <h1>Formwork</h1>
+    <p>Interface pieces built for real business sites — capture a lead, show pricing, answer support questions, save a preference. Plain HTML, CSS, and JavaScript. Copy the code, ship it today.</p>
+  </header>
+
+  <div class="catalog">
+
+    <!-- MODAL -->
+    <div class="specimen">
+      <div class="specimen-tag">Lead capture</div>
+      <h2>Book-a-call modal</h2>
+      <p class="desc">Turns a page visitor into a booked conversation without leaving the page.</p>
+      <div class="demo-area">
+        <button class="btn" id="openModal">Book a call</button>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="specimen">
+      <div class="specimen-tag">Sales</div>
+      <h2>Pricing plan tabs</h2>
+      <p class="desc">Lets visitors compare plans side by side without a page reload.</p>
+      <div class="demo-area">
+        <div class="tabset">
+          <div class="tab-bar">
+            <button class="tab-btn active" data-tab="0">Starter</button>
+            <button class="tab-btn" data-tab="1">Growth</button>
+            <button class="tab-btn" data-tab="2">Business</button>
+          </div>
+          <div class="tab-panel active" data-panel="0">
+            <div class="price-row"><span class="amount">$19</span><span class="period">/ month</span></div>
+            <p>For solo owners getting their first site online.</p>
+          </div>
+          <div class="tab-panel" data-panel="1">
+            <div class="price-row"><span class="amount">$49</span><span class="period">/ month</span></div>
+            <p>For small teams that need more pages and support.</p>
+          </div>
+          <div class="tab-panel" data-panel="2">
+            <div class="price-row"><span class="amount">$99</span><span class="period">/ month</span></div>
+            <p>For growing businesses with custom integration needs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCORDION -->
+    <div class="specimen">
+      <div class="specimen-tag">Support</div>
+      <h2>FAQ accordion</h2>
+      <p class="desc">Answers common questions upfront, cutting down support emails.</p>
+      <div class="demo-area">
+        <div class="accordion" id="accordion">
+          <div class="acc-item">
+            <div class="acc-head"><span>How long does setup take?</span><span class="plus">+</span></div>
+            <div class="acc-body"><p>Most sites are live within a week, depending on scope and content readiness.</p></div>
+          </div>
+          <div class="acc-item">
+            <div class="acc-head"><span>Can I update the content myself?</span><span class="plus">+</span></div>
+            <div class="acc-body"><p>Yes — every project is built so you can edit text and images without touching code.</p></div>
+          </div>
+          <div class="acc-item">
+            <div class="acc-head"><span>Do you offer ongoing support?</span><span class="plus">+</span></div>
+            <div class="acc-body"><p>Yes, monthly maintenance and update packages are available after launch.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOGGLE -->
+    <div class="specimen">
+      <div class="specimen-tag">Preferences</div>
+      <h2>Settings toggle</h2>
+      <p class="desc">A simple, clear on/off control for account or notification settings.</p>
+      <div class="demo-area">
+        <div class="pref-row">
+          <div class="pref-item">
+            <div>
+              <div class="label">Email me project updates</div>
+              <div class="hint">Sent about once a week</div>
+            </div>
+            <div class="switch" id="switchToggle"><div class="knob" id="switchKnob"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL MARKUP -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-icon">◎</div>
+    <h3>Schedule a 15-minute call</h3>
+    <p>Tell me your email and I'll follow up with times that work.</p>
+    <input type="email" placeholder="you@company.com">
+    <div class="modal-actions">
+      <button class="btn ghost" id="closeModal">Cancel</button>
+      <button class="btn" id="confirmModal">Request call</button>
+    </div>
+  </div>
+</div>
+
+<footer>Formwork — a component toolkit built by WorksByFontaine</footer>
+
+<script>
+  // MODAL
+  const overlay = document.getElementById('modalOverlay');
+  document.getElementById('openModal').addEventListener('click', () => overlay.classList.add('open'));
+  document.getElementById('closeModal').addEventListener('click', () => overlay.classList.remove('open'));
+  document.getElementById('confirmModal').addEventListener('click', () => overlay.classList.remove('open'));
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.classList.remove('open'); });
+
+  // TABS
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelector(`.tab-panel[data-panel="${i}"]`).classList.add('active');
+    });
+  });
+
+  // ACCORDION
+  document.querySelectorAll('.acc-item').forEach(item => {
+    const head = item.querySelector('.acc-head');
+    const body = item.querySelector('.acc-body');
+    head.addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.acc-item').forEach(i => {
+        i.classList.remove('open');
+        i.querySelector('.acc-body').style.maxHeight = null;
+      });
+      if (!isOpen) {
+        item.classList.add('open');
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+  });
+
+  // TOGGLE
+  const sw = document.getElementById('switchToggle');
+  const knob = document.getElementById('switchKnob');
+  let on = false;
+  sw.addEventListener('click', () => {
+    on = !on;
+    sw.style.background = on ? 'var(--blue)' : 'var(--panel-2)';
+    knob.style.transform = on ? 'translateX(19px)' : 'translateX(0)';
+  });
+</script>
+
+</body>
+</html>
